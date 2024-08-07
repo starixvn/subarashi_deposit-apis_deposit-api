@@ -11,4 +11,6 @@ public class Ticket
     public string TransTime { get; set; }
 
     public string[] Choice { get; set; }
+
+    public string Status { get; set; }
 }

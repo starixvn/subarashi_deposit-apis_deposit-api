@@ -2,6 +2,7 @@
 using BetListNPOI.SS.UserModel;
 using Fanex.BetList.Core.Builder;
 using Fanex.BetList.Core.Builder.ChoiceBuilder;
+using Fanex.BetList.Core.Builder.StatusBuilder;
 using Fanex.DepositAPI.Domain.Entities;
 using Fanex.DepositAPI.Domain.Errors;
 using Fanex.DepositAPI.Domain.Extensions;
@@ -98,6 +99,16 @@ public class TicketRepository : ITicketRepository
         return rtfChoiceList.SelectMany(rtf => rtf.ToString().Split("\n")).ToArray();
     }
 
+    private string BuildStatusText(TicketDetail ticketDetail)
+    {
+        IStatus statusBuilder = _excelBuilder.CreateStatusBuilder(ticketDetail.MainTicket.BetTypeId);
+        IRichTextString rtfStatus = statusBuilder.RenderRTF(ticketDetail.MainTicket, _ticketHelper, ticketDetail.TicketData, false, _excelBuilder.RTFHelper);
+
+        var text = rtfStatus.ToString();
+
+        return text[..text.IndexOf('\n')];
+    }
+
     private Ticket BuildTicketText(TicketDetail ticketDetail)
     {
         return new Ticket
@@ -107,6 +118,7 @@ public class TicketRepository : ITicketRepository
             TransTime = _htmlBuilder.BuildTransTime(ticketDetail.MainTicket),
             LicTxID = _htmlBuilder.BuildLicenseeTxId(ticketDetail.MainTicket),
             Choice = BuildChoiceText(ticketDetail),
+            Status = BuildStatusText(ticketDetail),
         };
     }
 
