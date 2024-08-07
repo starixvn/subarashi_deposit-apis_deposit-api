@@ -66,23 +66,25 @@ public class TicketRepository : ITicketRepository
                         ticketDetail.TicketData.AddRange(ReadReferneceTicket(reader).ToList());
                     }
                 }
-
-                var output = objectDb.GetOutputParams();
-
-                var code = Converter.ToInt(output["ErrCode"]);
-                var message = Converter.ToString(output["ErrMsg"]);
-
-                if (code != 0)
-                {
-                    var error = ServiceErrors.GetFromDBError(code, message);
-                    return ServiceResult<TicketDetail>.Failure(error);
-                }
-
-                if (ticketDetail == null)
-                    return ServiceResult<TicketDetail>.Failure(TicketError.NoInfomation);
-
-                return ServiceResult<TicketDetail>.Success(ticketDetail);
             }
+
+            var output = objectDb.GetOutputParams();
+
+            var code = Converter.ToInt(output["ErrCode"]);
+            var message = Converter.ToString(output["ErrMsg"]);
+
+            if (code != 0)
+            {
+                var error = ServiceErrors.GetFromDBError(code, message);
+                return ServiceResult<TicketDetail>.Failure(error);
+            }
+
+            if (ticketDetail == null)
+            {
+                return ServiceResult<TicketDetail>.Failure(TicketError.NoInfomation);
+            }
+
+            return ServiceResult<TicketDetail>.Success(ticketDetail);
         }
     }
 
