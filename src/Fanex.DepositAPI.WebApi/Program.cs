@@ -25,6 +25,8 @@ app.UseRouting();
 
 app.UseCors();
 
+app.UseRequestLocalization();
+
 app.MapGet("/", () => "Deposit API is running ...").ExcludeFromDescription();
 
 app.MapEndpoints();
