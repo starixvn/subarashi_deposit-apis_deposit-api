@@ -21,13 +21,6 @@ app.ConfigureExceptionHandler(builder.Configuration);
 
 app.ConfigureSwagger(builder.Configuration);
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
 app.UseRouting();
 
 app.UseCors();
