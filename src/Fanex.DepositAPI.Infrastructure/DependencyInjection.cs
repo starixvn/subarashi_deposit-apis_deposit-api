@@ -2,9 +2,7 @@
 using Fanex.BetList.Core.Entities;
 using Fanex.BetList.Core.TicketHelper;
 using Fanex.DepositAPI.Domain.Repositories;
-using Fanex.DepositAPI.Domain.Services;
 using Fanex.DepositAPI.Infrastructure.Repositories;
-using Fanex.DepositAPI.Infrastructure.Services;
 using Fanex.DepositAPI.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,17 +22,16 @@ public static class DependencyInjection
         services.TryAddScoped<IBetListHTMLBuilder, BetListHTMLBuilder>();
 
         // services
-        services.TryAddScoped<ILogAggregateService, LogAggregateService>();
-        services.TryAddTransient<ICacheService, CacheService>();
-        services.TryAddTransient<ITicketService, TicketService>();
         services.AddMemoryCache(options =>
         {
             options.TrackStatistics = true;
         });
 
         // repositories
-        services.TryAddTransient<IBalanceUpRepository, BalanceUpRepository>();
-        services.TryAddTransient<ITicketRepository, TicketRepository>();
+        services.TryAddScoped<IBalanceUpRepository, BalanceUpRepository>();
+        services.TryDecorate<IBalanceUpRepository, CachedBalanceUpRepository>();
+
+        services.TryAddScoped<ITicketRepository, TicketRepository>();
 
         services.TryAddSingleton<IDbFactory, DbFactory>();
         return services;

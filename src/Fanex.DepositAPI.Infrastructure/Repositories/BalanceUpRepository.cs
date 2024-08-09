@@ -20,7 +20,7 @@ public class BalanceUpRepository : IBalanceUpRepository
         using (var db = _dbFactory.GetObjectDb(SpKey))
         {
             var balanceUp = new BalanceUp();
-            using (var reader = db.ExecuteReader())
+            using (var reader = await db.ExecuteReaderAsync())
             {
                 if (reader.Read())
                 {

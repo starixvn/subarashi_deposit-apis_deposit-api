@@ -33,7 +33,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <Folder Include="Logs\" />
+    <Folder Include="LogFiles\" />
   </ItemGroup>
 	
   <ItemGroup>

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Fanex.DepositAPI.Domain.Services;
+namespace Fanex.DepositAPI.Application.Logs;
 
-public interface ILogAggregateService
+public interface ILogAggregate
 {
     void AppendHeader(string message);
 
