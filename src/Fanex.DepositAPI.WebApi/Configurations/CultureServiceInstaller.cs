@@ -4,37 +4,35 @@ namespace Fanex.DepositAPI.WebApi.Configurations;
 
 public class CultureServiceInstaller : IServiceInstaller
 {
-    private static readonly string[] supporteLanguageCode = ["en-US", "zh-CN"];
+    private static readonly string[] SupportedCultures = ["en-US", "zh-CN"];
 
     public static readonly IReadOnlyDictionary<string, string> LanguageCodeMappers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-        {
-            { "en-US", "en-US" },
-            { "en", "en-US" },
-            { "zh-CN", "zh-CN" },
-            { "cs", "zh-CN" },
-        };
+    {
+        { "en", "en-US" },
+        { "cs", "zh-CN" },
+    };
 
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            var supportedCultures = supporteLanguageCode;
+            var defaultCulture = SupportedCultures[0];
 
             options
-                .SetDefaultCulture(supportedCultures[0])
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
+                .SetDefaultCulture(defaultCulture)
+                .AddSupportedCultures(SupportedCultures)
+                .AddSupportedUICultures(SupportedCultures);
 
             options.RequestCultureProviders = [
                 new CustomRequestCultureProvider(context=>{
                     var query = context.Request.Query;
-                    var langCode = supporteLanguageCode[0];
+                    var culture = defaultCulture;
 
                     if (query != null && query.ContainsKey("lang")){
-                        langCode = LanguageCodeMappers.GetValueOrDefault(query["lang"], supporteLanguageCode[0]);
+                        culture = LanguageCodeMappers.GetValueOrDefault(query["lang"], defaultCulture);
                     }
 
-                    return Task.FromResult(new ProviderCultureResult(culture: supporteLanguageCode[0], uiCulture: langCode));
+                    return Task.FromResult(new ProviderCultureResult(culture: defaultCulture, uiCulture: culture));
                 }),
             ];
         });
