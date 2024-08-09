@@ -34,6 +34,7 @@ public class LoggingServiceInstaller : IServiceInstaller
             .ReadFrom.Configuration(configuration)
             .ReadFrom.Services(s)
             .Enrich.FromLogContext()
+            .Enrich.WithMachineName()
             .Enrich.WithProperty("Team", "Legion")
             .Enrich.WithProperty("Application", "DepositAPI")
             .Enrich.WithProperty("Enviroment", appsetting.Enviroment)
