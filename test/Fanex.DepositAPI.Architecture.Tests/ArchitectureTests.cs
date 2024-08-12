@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using NetArchTest.Rules;
-using Xunit;
 
 namespace Fanex.DepositAPI.Architecture.Tests;
 
+[TestFixture]
 public class ArchitectureTests
 {
     private const string DomainNamespace = "Fanex.DepositAPI.Domain";
@@ -12,7 +12,7 @@ public class ArchitectureTests
     private const string PresentationNamespace = "Fanex.DepositAPI.Presentation";
     private const string WebApiNamespace = "Fanex.DepositAPI.WebApi";
 
-    [Fact]
+    [Test]
     public void Domain_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
@@ -37,7 +37,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Application_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
@@ -61,7 +61,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Handlers_Should_HaveDependencyOnDomain()
     {
         // Arrange
@@ -80,7 +80,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Infrastructure_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
@@ -103,7 +103,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Presentation_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
@@ -126,7 +126,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Endpoint_Should_HaveDependencyOnMediatR()
     {
         // Arrange
