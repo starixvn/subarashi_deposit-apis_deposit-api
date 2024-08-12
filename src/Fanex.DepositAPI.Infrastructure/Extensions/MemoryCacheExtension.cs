@@ -59,7 +59,7 @@ public static class MemoryCacheExtension
 
         if (!Equals(value, default(T)))
         {
-            var defaultExpiredMinutes = 15;
+            const int defaultExpiredMinutes = 15;
             cache.Set(key, value, cacheTime ?? TimeSpan.FromMinutes(defaultExpiredMinutes));
         }
     }

@@ -30,8 +30,6 @@ public class ServiceResult<T>
     public static ServiceResult<T> Success(T result) => new(true, ServiceErrors.None, result);
 
     public static ServiceResult<T> Failure(ServiceErrors error) => new(false, error, default);
-
-    public static ServiceResult<T> FailureWithData(ServiceErrors error, T result) => new(false, error, result);
 }
 
 public class ServiceResult

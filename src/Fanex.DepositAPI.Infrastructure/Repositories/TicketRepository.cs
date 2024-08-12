@@ -168,16 +168,13 @@ public class TicketRepository : ITicketRepository
         ticket.EventStatus = Converter.ToString(reader["betstatus"]);
         ticket.ShowTime = Converter.ToString(reader["showtime"]);
         ticket.OddsType = Converter.ToString(reader["oddstype"], "0");
-        //ticket.ExternalId = Converter.ToString(reader["nickname"]);
         ticket.Race = Converter.ToString(reader["race"]);
-        //ticket.BetFrom = reader.GetString("betfrom");
         ticket.BetCheck = Converter.ToString(reader["betcheck"]);
         ticket.TransDesc = Converter.ToString(reader["transdesc"]);
         ticket.ExtraInfo = Converter.ToString(reader["extrainfo"]);
         ticket.IP = Converter.ToString(reader["ip"]);
         ticket.SiteId = Converter.ToString(reader["siteId"]);
         ticket.JackpotInfo = Converter.ToString(reader["JackpotInfo"]);
-        //ticket.Reason = reader.GetString("reason");
     }
 
     private static void ReadBooleanData(BetList.Core.Entities.Ticket ticket, IDataReader reader)
@@ -204,11 +201,8 @@ public class TicketRepository : ITicketRepository
         ticket.MatchId = Converter.ToInt(reader["matchid"]);
         ticket.LiveHomeScore = Converter.ToInt(reader["livehomescore"]);
         ticket.LiveAwayScore = Converter.ToInt(reader["liveawayscore"]);
-        //ticket.SpecialLevel = reader.GetInt("SpecialLevel");
-        //ticket.StatusId = Converter.ToNullableInt(reader["StatusId"]);
         ticket.WalletType = Converter.ToByte(reader["wallettype"]);
         ticket.OriginalBetType = Converter.ToInt(reader["originalbettype"]);
-        //ticket.CustomerClass = reader.GetInt("customerclass");
         ticket.LeagueGroupId = Converter.ToInt(reader["leagueGroupId"]);
 
         // Long
@@ -220,9 +214,7 @@ public class TicketRepository : ITicketRepository
         // Money
         ticket.PlayerComm = Converter.ToDecimal(reader["playercomm"]);
         ticket.Comm = Converter.ToDecimal(reader["comm"]);
-        //ticket.LicenseeWL = reader.GetDecimal(columns["licenseeWlCol"]);
         ticket.Winlost = Converter.ToDecimal(reader["winlost"]);
-        //ticket.BetEffective = reader.GetDecimal(columns["beteffectiveCol"]);
         ticket.Stake = Converter.ToDecimal(reader["stake"]);
         ticket.ActualStake = Converter.ToDecimal(reader["actual_stake"]);
         ticket.Odds = Converter.ToDecimal(reader["odds"]);
@@ -233,10 +225,6 @@ public class TicketRepository : ITicketRepository
         ticket.OddsSpread = Converter.ToDecimal(reader["oddsspread"]);
 
         ticket.SettlementStatus = Converter.ToByte(reader["SettlementStatus"]);
-
-        // Booked Bet
-        //ticket.OddsLower = reader.GetDecimal("oddslower");
-        //ticket.OddsUpper = reader.GetDecimal("oddsupper");
     }
 
     #endregion ReadTicketData
