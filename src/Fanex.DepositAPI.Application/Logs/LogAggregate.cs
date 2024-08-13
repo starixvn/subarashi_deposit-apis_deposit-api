@@ -1,16 +1,15 @@
 ﻿using System.Text;
-using Fanex.DepositAPI.Domain.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Fanex.DepositAPI.Infrastructure.Services;
+namespace Fanex.DepositAPI.Application.Logs;
 
-public class LogAggregateService : ILogAggregateService
+public class LogAggregate : ILogAggregate
 {
     private readonly Logging.ILogger _logger;
 
     private StringBuilder Builder { get; set; }
 
-    public LogAggregateService(Logging.ILogger logger)
+    public LogAggregate(Logging.ILogger logger)
     {
         Builder = new StringBuilder();
         _logger = logger;

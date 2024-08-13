@@ -1,5 +1,4 @@
-﻿using Fanex.DepositAPI.Domain.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Fanex.DepositAPI.Presentation.Filters;
 

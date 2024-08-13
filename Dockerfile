@@ -14,7 +14,7 @@ COPY --from=deps $NUGET_PACKAGES/. $NUGET_PACKAGES/
 WORKDIR /src
 
 COPY NuGet.Config .
-RUN dotnet nuget add source http://nuget.nexdev.net/api/v2
+RUN dotnet nuget add source https://nuget.nexdev.net/api/v2
 
 COPY src/Fanex.DepositAPI.Application/Fanex.DepositAPI.Application.csproj ./Fanex.DepositAPI.Application/
 RUN dotnet restore Fanex.DepositAPI.Application/Fanex.DepositAPI.Application.csproj -v n -r linux-x64

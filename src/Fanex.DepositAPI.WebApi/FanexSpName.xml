@@ -1,3 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Function Name="DepositAPI">
+	<Function Name="Ticket">
+		<Setting Key="Lrf_SelBalanceUpDay" SpName="Lrf_SelBalanceUpDay" DbName="DBEXT.bodb02.wsv_lap" />
+		<Setting Key="API_BetList_RefNo" SpName="API_BetList_RefNo" DbName="DBACC.bodb02.wsv_lap" />
+	</Function>
 </Function>
