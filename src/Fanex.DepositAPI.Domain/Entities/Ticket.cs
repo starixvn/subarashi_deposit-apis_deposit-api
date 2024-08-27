@@ -2,6 +2,10 @@
 
 public class Ticket
 {
+    public int SportType {get; set; }
+
+    public int AgentId { get; set; }
+
     public string RefNo { get; set; }
 
     public string SystemId { get; set; }
