@@ -9,4 +9,6 @@ public class TicketDetail
     public List<ITicketData> TicketData { get; set; } = new List<ITicketData>();
 
     public int SpecialPlatform { get; set; }
+
+    public int AgentId {get; set; }
 }

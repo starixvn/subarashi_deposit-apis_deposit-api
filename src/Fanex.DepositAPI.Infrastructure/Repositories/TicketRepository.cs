@@ -10,6 +10,7 @@ using Fanex.DepositAPI.Domain.Repositories;
 using Fanex.DepositAPI.Domain.Results;
 using Fanex.DepositAPI.Infrastructure.Models;
 using Fanex.DepositAPI.Infrastructure.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace Fanex.DepositAPI.Infrastructure.Repositories;
 
@@ -59,7 +60,8 @@ public class TicketRepository : ITicketRepository
                     ticketDetail = new TicketDetail
                     {
                         MainTicket = MapTicket(reader),
-                        SpecialPlatform = Converter.ToInt(reader["SpecialPlatform"])
+                        SpecialPlatform = Converter.ToInt(reader["SpecialPlatform"]),
+                        AgentId = Converter.ToInt(reader["Recommend"])
                     };
 
                     if (reader.NextResult())
@@ -113,6 +115,8 @@ public class TicketRepository : ITicketRepository
     {
         return new Ticket
         {
+            SportType = ticketDetail.MainTicket.SportTypeId,
+            AgentId = ticketDetail.AgentId,
             SystemId = ticketDetail.MainTicket.UserName,
             RefNo = _htmlBuilder.BuildRefNo(ticketDetail.MainTicket),
             TransTime = _htmlBuilder.BuildTransTime(ticketDetail.MainTicket),
