@@ -1,12 +1,13 @@
-﻿using System.Reflection;
-using Fanex.DepositAPI.Application;
-using Fanex.DepositAPI.Infrastructure;
-using Fanex.DepositAPI.Presentation;
-using Fanex.DepositAPI.WebApi.Configurations;
-using Fanex.DepositAPI.WebApi.ExceptionHandler;
-using Fanex.DepositAPI.WebApi.HealthChecks;
+﻿namespace Fanex.DepositAPI.WebApi.Startup;
 
-namespace Fanex.DepositAPI.WebApi.Startup;
+using System.Reflection;
+using Application;
+using Configurations;
+using Data;
+using ExceptionHandler;
+using HealthChecks;
+using Infrastructure;
+using Presentation;
 
 public static class DependencyInjection
 {
@@ -23,15 +24,13 @@ public static class DependencyInjection
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
-        services.Configure<RouteHandlerOptions>(options =>
-        {
-            options.ThrowOnBadRequest = true;
-        });
+        services.Configure<RouteHandlerOptions>(options => { options.ThrowOnBadRequest = true; });
 
         services
             .AddHealthChecks()
-            .AddCheck<ServerHealthCheck>("server_whoami")
-            .AddCheck<MemoryHealthCheck>("memory_whoami");
+            .AddCheck<ServerHealthCheck>("Server")
+            .AddCheck<MemoryHealthCheck>("Memory")
+            .AddMultiSqlServer(configuration);
 
         services.AddHttpContextAccessor();
         services.AddExceptionHandler<BadHttpRequestExceptionHandler>();
@@ -42,7 +41,7 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection InstallServices(this IServiceCollection services, IConfiguration configuration, params Assembly[] assemblies)
+    private static void InstallServices(this IServiceCollection services, IConfiguration configuration, params Assembly[] assemblies)
     {
         var serviceInstallers = assemblies
             .SelectMany(a => a.DefinedTypes)
@@ -50,11 +49,24 @@ public static class DependencyInjection
             .Select(Activator.CreateInstance)
             .Cast<IServiceInstaller>();
 
-        foreach (IServiceInstaller serviceInstaller in serviceInstallers)
+        foreach (var serviceInstaller in serviceInstallers)
         {
             serviceInstaller.Install(services, configuration);
         }
+    }
 
-        return services;
+    private static IHealthChecksBuilder AddMultiSqlServer(this IHealthChecksBuilder healthChecksBuilder, IConfiguration configuration)
+    {
+        var connectionStrings = configuration.GetSection("ConnectionStrings")
+            .GetChildren()
+            .Where(config => config.Value is not null && !config.Value.Contains("dynamic_runtime"));
+
+        foreach (var connectionString in connectionStrings)
+        {
+            var rawConnectionString = Cryptography.DecryptConnectionString(connectionString.Value);
+            healthChecksBuilder.AddSqlServer(rawConnectionString, name: connectionString.Key);
+        }
+
+        return healthChecksBuilder;
     }
 }

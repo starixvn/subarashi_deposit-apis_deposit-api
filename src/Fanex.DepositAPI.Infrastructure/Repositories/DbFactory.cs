@@ -1,6 +1,6 @@
-﻿using Fanex.Data;
+﻿namespace Fanex.DepositAPI.Infrastructure.Repositories;
 
-namespace Fanex.DepositAPI.Infrastructure.Repositories;
+using Data;
 
 public class DbFactory : IDbFactory
 {

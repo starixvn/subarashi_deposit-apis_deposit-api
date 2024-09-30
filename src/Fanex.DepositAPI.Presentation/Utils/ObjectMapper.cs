@@ -1,10 +1,11 @@
-﻿using Fanex.DepositAPI.Application.Queries;
-namespace Fanex.DepositAPI.Presentation.Utils;
+﻿namespace Fanex.DepositAPI.Presentation.Utils;
+
+using Application.Queries;
 
 public static class ObjectMapper
 {
-    public static GetTicketInfomationQuery MapGetTicketInfomationQuery(long refno)
+    public static GetTicketInformationQuery MapGetTicketInfomationQuery(long refNo)
     {
-        return new GetTicketInfomationQuery { Refno = refno };
+        return new GetTicketInformationQuery { RefNo = refNo };
     }
 }

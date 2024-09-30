@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Fanex.DepositAPI.Presentation.Utils;
 
-namespace Fanex.DepositAPI.Presentation.Utils;
+using System.ComponentModel.DataAnnotations;
 
 public static class RequestValidator
 {
-    public static bool IsValidRequest(object request, out List<ValidationResult> results)
+    public static (bool isValid, List<ValidationResult> results) IsValidRequest(object request)
     {
         var validationContext = new ValidationContext(request);
         var validationResults = new List<ValidationResult>();
         var isValid = Validator.TryValidateObject(request, validationContext, validationResults, true);
-        results = validationResults;
-        return isValid;
+
+        return (isValid, validationResults);
     }
 
     public static string GetInvalidParamList(List<ValidationResult> results)

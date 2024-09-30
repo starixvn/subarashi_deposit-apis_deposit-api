@@ -1,7 +1,7 @@
-﻿using Fanex.Data;
-using Fanex.Data.SqlServer;
+﻿namespace Fanex.DepositAPI.WebApi.Configurations;
 
-namespace Fanex.DepositAPI.WebApi.Configurations;
+using Data;
+using Data.SqlServer;
 
 public class FanexDataServiceInstaller : IServiceInstaller
 {
@@ -14,14 +14,11 @@ public class FanexDataServiceInstaller : IServiceInstaller
                 new ConnectionConfiguration(connectionName, configuration.GetConnectionString(connectionName))))
             .ToDictionary();
 
-        //var httpContext = services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>();
-
         DbSettingProviderManager
             .StartNewSession()
             .Use(connectionStrings)
             .WithSqlServer()
             .UseDefaultDbSettingProvider("~/FanexSpName.xml")
-            //.Use(new ShardDbSettingProvider(new ShardDbInfoAccessor(httpContext), "~/FanexSpName.xml"))
             .Run();
     }
 }

@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿namespace Fanex.DepositAPI.Infrastructure.Extensions;
 
-namespace Fanex.DepositAPI.Infrastructure.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 
 public static class MemoryCacheExtension
 {
-    public static async Task<T> GetOrCreateFromCache<T>(this IMemoryCache cache, string key, Func<Task<T>> action, TimeSpan? cacheTime) where T : class
+    public static async Task<T> GetOrCreateFromCache<T>(this IMemoryCache cache, string key, Func<Task<T>> action, TimeSpan? cacheTime)
+        where T : class
     {
         if (!cache.TryGetValue(key, out T data))
         {
@@ -14,6 +15,7 @@ public static class MemoryCacheExtension
                 cache.SetValueToCache(key, data, cacheTime);
             }
         }
+
         return data;
     }
 
@@ -27,6 +29,7 @@ public static class MemoryCacheExtension
                 cache.SetValueToCacheWithoutExpired(key, data);
             }
         }
+
         return data;
     }
 
@@ -75,7 +78,7 @@ public static class MemoryCacheExtension
         {
             var options = new MemoryCacheEntryOptions
             {
-                Priority = CacheItemPriority.NeverRemove,
+                Priority = CacheItemPriority.NeverRemove
             };
 
             cache.Set(key, value, options);

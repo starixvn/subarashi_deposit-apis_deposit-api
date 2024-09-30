@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Fanex.DepositAPI.Domain\Fanex.DepositAPI.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\" />
+  </ItemGroup>
+
 </Project>

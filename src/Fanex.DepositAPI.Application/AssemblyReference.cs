@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+﻿namespace Fanex.DepositAPI.Application;
 
-namespace Fanex.DepositAPI.Application;
+using System.Reflection;
 
 public static class AssemblyReference
 {

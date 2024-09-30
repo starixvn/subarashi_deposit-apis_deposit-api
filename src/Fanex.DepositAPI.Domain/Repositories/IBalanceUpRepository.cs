@@ -1,8 +1,8 @@
-﻿using Fanex.DepositAPI.Domain.Entities;
+﻿namespace Fanex.DepositAPI.Domain.Repositories;
 
-namespace Fanex.DepositAPI.Domain.Repositories;
+using Entities;
 
 public interface IBalanceUpRepository
 {
-    Task<BalanceUp> GetBalanceUp();
+    Task<BalanceUp> GetBalanceUpAsync();
 }

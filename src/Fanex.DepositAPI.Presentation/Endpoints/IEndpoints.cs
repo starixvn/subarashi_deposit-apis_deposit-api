@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿namespace Fanex.DepositAPI.Presentation.Endpoints;
 
-namespace Fanex.DepositAPI.Presentation.Endpoints;
+using Microsoft.AspNetCore.Routing;
 
 public interface IEndpoints
 {

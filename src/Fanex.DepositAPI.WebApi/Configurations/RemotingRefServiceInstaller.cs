@@ -1,16 +1,16 @@
-﻿using Fanex.BetList.Core.RemotingRef;
-using Fanex.BetList.Core;
-using Fanex.RemotingRef;
+﻿namespace Fanex.DepositAPI.WebApi.Configurations;
 
-namespace Fanex.DepositAPI.WebApi.Configurations;
+using BetList.Core;
+using BetList.Core.RemotingRef;
+using RemotingRef;
 
 public class RemotingRefServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
         RefDataTypeContainer
-        .ConnectTo(new Uri(configuration["RemotingRefUrl"]))
-        .FromApplication("DepositAPI");
+            .ConnectTo(new Uri(configuration["RemotingRefUrl"] ?? string.Empty))
+            .FromApplication("DepositAPI");
 
         services.AddSingleton<IRemotingRefService, RemotingRefService>();
 

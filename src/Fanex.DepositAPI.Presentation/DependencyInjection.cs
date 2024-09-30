@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿namespace Fanex.DepositAPI.Presentation;
 
-namespace Fanex.DepositAPI.Presentation;
+using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {

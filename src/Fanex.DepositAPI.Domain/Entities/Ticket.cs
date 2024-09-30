@@ -2,7 +2,7 @@
 
 public class Ticket
 {
-    public int SportType {get; set; }
+    public int SportType { get; set; }
 
     public int AgentId { get; set; }
 

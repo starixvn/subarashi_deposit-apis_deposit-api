@@ -1,6 +1,6 @@
-﻿using Microsoft.OpenApi.Models;
+﻿namespace Fanex.DepositAPI.WebApi.Configurations;
 
-namespace Fanex.DepositAPI.WebApi.Configurations;
+using Microsoft.OpenApi.Models;
 
 public class SwaggerServiceInstaller : IServiceInstaller
 {
@@ -12,7 +12,7 @@ public class SwaggerServiceInstaller : IServiceInstaller
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Deposit API",
+                Title = "Deposit API"
             });
         });
     }

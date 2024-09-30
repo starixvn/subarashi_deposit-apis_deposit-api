@@ -8,10 +8,3 @@ public interface IResultResponse<T> where T : class
 
     public T Result { get; set; }
 }
-
-public interface IResultResponse
-{
-    public int ErrorCode { get; set; }
-
-    public string ErrorMessage { get; set; }
-}
