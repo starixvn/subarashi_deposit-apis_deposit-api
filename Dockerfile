@@ -41,6 +41,7 @@ RUN dotnet publish "Fanex.DepositAPI.WebApi.csproj" -c Release -o /publish -r li
 
 FROM hub.nexdev.net/base/dotnet/core/aspnet:8.0-alpine
 
+ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
 ENV ASPNETCORE_HTTP_PORTS=5000
 EXPOSE 5000
 
