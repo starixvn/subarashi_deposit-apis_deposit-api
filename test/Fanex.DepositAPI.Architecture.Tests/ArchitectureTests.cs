@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
+﻿namespace Fanex.DepositAPI.Architecture.Tests;
+
+using Domain;
+using FluentAssertions;
 using NetArchTest.Rules;
 
-namespace Fanex.DepositAPI.Architecture.Tests;
-
-[TestFixture]
 public class ArchitectureTests
 {
     private const string DomainNamespace = "Fanex.DepositAPI.Domain";
@@ -12,18 +12,18 @@ public class ArchitectureTests
     private const string PresentationNamespace = "Fanex.DepositAPI.Presentation";
     private const string WebApiNamespace = "Fanex.DepositAPI.WebApi";
 
-    [Test]
+    [Fact]
     public void Domain_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
-        var assembly = typeof(Domain.AssemblyReference).Assembly;
+        var assembly = typeof(AssemblyReference).Assembly;
 
         var otherProjects = new[]
         {
             ApplicationNamespace,
             InfrastructureNamespace,
             PresentationNamespace,
-            WebApiNamespace,
+            WebApiNamespace
         };
 
         // Act
@@ -37,7 +37,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public void Application_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
@@ -47,7 +47,7 @@ public class ArchitectureTests
         {
             InfrastructureNamespace,
             PresentationNamespace,
-            WebApiNamespace,
+            WebApiNamespace
         };
 
         // Act
@@ -61,7 +61,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public void Handlers_Should_HaveDependencyOnDomain()
     {
         // Arrange
@@ -80,7 +80,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public void Infrastructure_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
@@ -89,7 +89,7 @@ public class ArchitectureTests
         var otherProjects = new[]
         {
             PresentationNamespace,
-            WebApiNamespace,
+            WebApiNamespace
         };
 
         // Act
@@ -103,7 +103,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public void Presentation_Should_Not_HaveDependencyOnOtherProjects()
     {
         // Arrange
@@ -112,7 +112,7 @@ public class ArchitectureTests
         var otherProjects = new[]
         {
             InfrastructureNamespace,
-            WebApiNamespace,
+            WebApiNamespace
         };
 
         // Act
@@ -126,7 +126,7 @@ public class ArchitectureTests
         testResult.IsSuccessful.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public void Endpoint_Should_HaveDependencyOnMediatR()
     {
         // Arrange

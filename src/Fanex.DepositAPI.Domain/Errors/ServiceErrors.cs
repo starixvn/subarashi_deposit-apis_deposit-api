@@ -6,5 +6,5 @@ public sealed record ServiceErrors(int Code, string Message)
 
     public static readonly ServiceErrors SystemError = new(999, "System error.");
 
-    public static ServiceErrors GetFromDBError(int code, string message) => new(code, message);
+    public static ServiceErrors GetFromDbError(int code, string message) => new(code, message);
 }

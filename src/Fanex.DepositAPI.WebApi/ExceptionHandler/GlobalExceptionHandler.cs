@@ -1,22 +1,16 @@
-﻿using System.Net;
-using Fanex.DepositAPI.Application.Utils;
+﻿namespace Fanex.DepositAPI.WebApi.ExceptionHandler;
+
+using System.Net;
+using Application.Utils;
+using Logging;
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace Fanex.DepositAPI.WebApi.ExceptionHandler;
-
-internal sealed class GlobalExceptionHandler : IExceptionHandler
+public sealed class GlobalExceptionHandler(ILogger logger) : IExceptionHandler
 {
-    private readonly Logging.ILogger _logger;
-
-    public GlobalExceptionHandler(Logging.ILogger logger)
-    {
-        _logger = logger;
-    }
-
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         var errorMsg = ErrorMessageUtils.GenerateMessage(exception, httpContext);
-        _logger.Error(errorMsg, exception);
+        await logger.ErrorAsync(errorMsg, exception);
 
         httpContext.Response.Clear();
         httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

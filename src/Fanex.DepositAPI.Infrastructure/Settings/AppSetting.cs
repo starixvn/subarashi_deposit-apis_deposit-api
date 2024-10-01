@@ -10,5 +10,5 @@ public class AppSetting
 
     public string Version { get; set; }
 
-    public string Enviroment { get; set; }
+    public string Environment { get; set; }
 }

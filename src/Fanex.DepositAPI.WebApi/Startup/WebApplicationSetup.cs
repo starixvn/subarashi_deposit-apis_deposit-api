@@ -1,18 +1,18 @@
-﻿using System.Net.Mime;
-using Fanex.DepositAPI.Infrastructure.Settings;
+﻿namespace Fanex.DepositAPI.WebApi.Startup;
+
+using System.Net.Mime;
+using Infrastructure.Settings;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
-
-namespace Fanex.DepositAPI.WebApi.Startup;
 
 public static class WebApplicationSetup
 {
     public static WebApplication ConfigureExceptionHandler(this WebApplication app, IConfiguration configuration)
     {
-        var appsetting = configuration.GetSection(AppSetting.SettingName).Get<AppSetting>();
+        var appSetting = configuration.GetSection(AppSetting.SettingName).Get<AppSetting>();
 
-        if (appsetting.UseErrorHandler)
+        if (appSetting.UseErrorHandler)
         {
             app.UseExceptionHandler(opts => { });
         }
@@ -26,15 +26,15 @@ public static class WebApplicationSetup
 
     public static WebApplication ConfigureSwagger(this WebApplication app, IConfiguration configuration)
     {
-        var appsetting = configuration.GetSection(AppSetting.SettingName).Get<AppSetting>();
+        var appSetting = configuration.GetSection(AppSetting.SettingName).Get<AppSetting>();
 
-        if (appsetting.UseSwagger)
+        if (appSetting.UseSwagger)
         {
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.EnableTryItOutByDefault();
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", $"Deposit API v1");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Deposit API v1");
             });
         }
 
@@ -61,10 +61,9 @@ public static class WebApplicationSetup
             await context.Response.WriteAsync(result);
         };
 
-        app.UseHealthChecks("/whoami", options: new HealthCheckOptions
+        app.UseHealthChecks("/whoami", new HealthCheckOptions
         {
             AllowCachingResponses = false,
-            Predicate = _ => _.Name.Contains("whoami"),
             ResponseWriter = customResponseWriter
         });
 

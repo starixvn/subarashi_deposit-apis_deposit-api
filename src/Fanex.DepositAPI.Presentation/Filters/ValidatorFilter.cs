@@ -1,8 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Fanex.DepositAPI.Presentation.Utils;
-using Microsoft.AspNetCore.Http;
+﻿namespace Fanex.DepositAPI.Presentation.Filters;
 
-namespace Fanex.DepositAPI.Presentation.Filters;
+using Microsoft.AspNetCore.Http;
+using Utils;
 
 public class ValidatorFilter<T> : IEndpointFilter where T : class
 {
@@ -10,7 +9,19 @@ public class ValidatorFilter<T> : IEndpointFilter where T : class
     {
         var entity = context.Arguments.OfType<T>().FirstOrDefault(a => a?.GetType() == typeof(T));
 
-        if (RequestValidator.IsValidRequest(entity, out List<ValidationResult> validationResults))
+        if (entity is null)
+        {
+            return Results.BadRequest(new
+            {
+                code = 400,
+                type = "INVALID_PARAMETER_VALUE",
+                message = "Invalid value or required parameter list: Request parameters are null."
+            });
+        }
+
+        var (isValid, validationResults) = RequestValidator.IsValidRequest(entity);
+
+        if (isValid)
         {
             return await next(context);
         }
@@ -19,7 +30,7 @@ public class ValidatorFilter<T> : IEndpointFilter where T : class
         {
             code = 400,
             type = "INVALID_PARAMETER_VALUE",
-            message = $"Invalid value or required parameter list: {RequestValidator.GetInvalidParamList(validationResults)}",
+            message = $"Invalid value or required parameter list: {RequestValidator.GetInvalidParamList(validationResults)}"
         });
     }
 }

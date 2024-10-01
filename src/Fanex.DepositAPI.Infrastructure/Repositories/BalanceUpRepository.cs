@@ -1,35 +1,28 @@
-﻿using Fanex.DepositAPI.Domain.Entities;
-using Fanex.DepositAPI.Domain.Repositories;
-using Fanex.DepositAPI.Infrastructure.Utils;
+﻿namespace Fanex.DepositAPI.Infrastructure.Repositories;
 
-namespace Fanex.DepositAPI.Infrastructure.Repositories;
+using Constants;
+using Domain.Entities;
+using Domain.Repositories;
+using Utils;
 
-public class BalanceUpRepository : IBalanceUpRepository
+public class BalanceUpRepository(IDbFactory dbFactory) : IBalanceUpRepository
 {
-    private readonly IDbFactory _dbFactory;
-
-    public BalanceUpRepository(IDbFactory dbFactory)
-    {
-        _dbFactory = dbFactory;
-    }
-
-    public async Task<BalanceUp> GetBalanceUp()
+    public async Task<BalanceUp> GetBalanceUpAsync()
     {
         const string SpKey = "Lrf_SelBalanceUpDay";
 
-        using (var db = _dbFactory.GetObjectDb(SpKey))
-        {
-            var balanceUp = new BalanceUp();
-            using (var reader = await db.ExecuteReaderAsync())
-            {
-                if (reader.Read())
-                {
-                    balanceUp.BalanceUpDay = Converter.ToDateTime(reader["balanceupday"]);
-                    balanceUp.MoveBetsDay = Converter.ToDateTime(reader["movebetsday"]);
-                }
+        using var db = dbFactory.GetObjectDb(SpKey);
+        using var reader = await db.ExecuteReaderAsync();
 
-                return balanceUp;
-            }
+        if (reader.Read())
+        {
+            return new BalanceUp
+            {
+                BalanceUpDay = Converter.ToDateTime(reader[DbParam.BalanceUpDay]),
+                MoveBetsDay = Converter.ToDateTime(reader[DbParam.MoveBetsDay])
+            };
         }
+
+        return default;
     }
 }

@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Localization;
+﻿namespace Fanex.DepositAPI.WebApi.Configurations;
 
-namespace Fanex.DepositAPI.WebApi.Configurations;
+using Microsoft.AspNetCore.Localization;
 
 public class CultureServiceInstaller : IServiceInstaller
 {
     private static readonly string[] SupportedCultures = ["en-US", "zh-CN"];
 
-    public static readonly IReadOnlyDictionary<string, string> LanguageCodeMappers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-    {
-        { "en", "en-US" },
-        { "cs", "zh-CN" },
-    };
+    public static readonly IReadOnlyDictionary<string, string> LanguageCodeMappers =
+        new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            { "en", "en-US" },
+            { "cs", "zh-CN" }
+        };
 
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
@@ -23,17 +24,20 @@ public class CultureServiceInstaller : IServiceInstaller
                 .AddSupportedCultures(SupportedCultures)
                 .AddSupportedUICultures(SupportedCultures);
 
-            options.RequestCultureProviders = [
-                new CustomRequestCultureProvider(context=>{
+            options.RequestCultureProviders =
+            [
+                new CustomRequestCultureProvider(context =>
+                {
                     var query = context.Request.Query;
                     var culture = defaultCulture;
 
-                    if (query != null && query.ContainsKey("lang")){
+                    if (query != null && query.ContainsKey("lang"))
+                    {
                         culture = LanguageCodeMappers.GetValueOrDefault(query["lang"], defaultCulture);
                     }
 
-                    return Task.FromResult(new ProviderCultureResult(culture: defaultCulture, uiCulture: culture));
-                }),
+                    return Task.FromResult(new ProviderCultureResult(defaultCulture, culture));
+                })
             ];
         });
     }

@@ -1,14 +1,15 @@
-﻿using Fanex.BetList.Core.Builder;
-using Fanex.BetList.Core.Entities;
-using Fanex.BetList.Core.TicketHelper;
-using Fanex.DepositAPI.Domain.Repositories;
-using Fanex.DepositAPI.Infrastructure.Repositories;
-using Fanex.DepositAPI.Infrastructure.Settings;
+﻿namespace Fanex.DepositAPI.Infrastructure;
+
+using BetList.Core.Builder;
+using BetList.Core.Entities;
+using BetList.Core.TicketHelper;
+using Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
-namespace Fanex.DepositAPI.Infrastructure;
+using Repositories;
+using Repositories.Decorate;
+using Settings;
 
 public static class DependencyInjection
 {
@@ -21,19 +22,21 @@ public static class DependencyInjection
         services.TryAddScoped<IBetListExcelBuilder, BetListExcelBuilder>();
         services.TryAddScoped<IBetListHTMLBuilder, BetListHTMLBuilder>();
 
-        // services
-        services.AddMemoryCache(options =>
-        {
-            options.TrackStatistics = true;
-        });
+        services.AddMemoryCache(options => { options.TrackStatistics = true; });
 
         // repositories
-        services.TryAddScoped<IBalanceUpRepository, BalanceUpRepository>();
-        services.TryDecorate<IBalanceUpRepository, CachedBalanceUpRepository>();
 
         services.TryAddScoped<ITicketRepository, TicketRepository>();
-
         services.TryAddSingleton<IDbFactory, DbFactory>();
+
+        services.AddDecorateRepository();
+
         return services;
+    }
+
+    private static void AddDecorateRepository(this IServiceCollection services)
+    {
+        services.TryAddScoped<IBalanceUpRepository, BalanceUpRepository>();
+        services.TryDecorate<IBalanceUpRepository, CachedBalanceUpRepository>();
     }
 }

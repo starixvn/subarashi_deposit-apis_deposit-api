@@ -1,114 +1,55 @@
-﻿using System.Data;
-using BetListNPOI.SS.UserModel;
-using Fanex.BetList.Core.Builder;
-using Fanex.BetList.Core.Builder.ChoiceBuilder;
-using Fanex.BetList.Core.Builder.StatusBuilder;
-using Fanex.DepositAPI.Domain.Entities;
-using Fanex.DepositAPI.Domain.Errors;
-using Fanex.DepositAPI.Domain.Extensions;
-using Fanex.DepositAPI.Domain.Repositories;
-using Fanex.DepositAPI.Domain.Results;
-using Fanex.DepositAPI.Infrastructure.Models;
-using Fanex.DepositAPI.Infrastructure.Utils;
-using Microsoft.Extensions.Logging;
+﻿namespace Fanex.DepositAPI.Infrastructure.Repositories;
 
-namespace Fanex.DepositAPI.Infrastructure.Repositories;
+using System.Data;
+using Application.Common.Interfaces;
+using BetList.Core.Builder;
+using BetList.Core.Entities;
+using Constants;
+using Domain.Entities;
+using Domain.Errors;
+using Domain.Extensions;
+using Domain.Repositories;
+using Domain.Results;
+using Models;
+using Utils;
+using BetListTicket = BetList.Core.Entities.Ticket;
+using Ticket = Domain.Entities.Ticket;
 
-public class TicketRepository : ITicketRepository
+public class TicketRepository(
+    IDbFactory dbFactory,
+    IBetListExcelBuilder excelBuilder,
+    IBetListHTMLBuilder htmlBuilder,
+    ITicketHelper ticketHelper,
+    IDateTimeProvider dateTimeProvider)
+    : ITicketRepository
 {
-    private readonly IDbFactory _dbFactory;
-    private readonly IBetListExcelBuilder _excelBuilder;
-    private readonly IBetListHTMLBuilder _htmlBuilder;
-    private readonly BetList.Core.Entities.ITicketHelper _ticketHelper;
-
-    public TicketRepository(
-        IDbFactory dbFactory,
-        IBetListExcelBuilder excelBuilder,
-        IBetListHTMLBuilder htmlBuilder,
-        BetList.Core.Entities.ITicketHelper ticketHelper)
+    public async Task<ServiceResult<Ticket>> GetTicketInformationAsync(long refNo, BalanceUp balanceUp)
     {
-        _dbFactory = dbFactory;
-        _excelBuilder = excelBuilder;
-        _htmlBuilder = htmlBuilder;
-        _ticketHelper = ticketHelper;
-    }
-
-    public async Task<ServiceResult<Ticket>> GetTicketInfomation(long refno, BalanceUp balanceUp)
-    {
-        var ticketDetailResult = await GetTicketFromDB(refno, balanceUp);
+        var ticketDetailResult = await GetTicketFromDb(refNo, balanceUp);
 
         return ticketDetailResult.Match(
-            onSuccess: () => ServiceResult<Ticket>.Success(BuildTicketText(ticketDetailResult.Result)),
-            onFailure: ServiceResult<Ticket>.Failure);
-    }
-
-    private async Task<ServiceResult<TicketDetail>> GetTicketFromDB(long refno, BalanceUp balanceUp)
-    {
-        const string SpKey = "API_BetList_RefNo";
-        TicketDetail ticketDetail = null;
-
-        using (var objectDb = _dbFactory.GetObjectDb(SpKey))
-        {
-            objectDb.SetParameterValue("Refno", refno);
-            objectDb.SetParameterValue("BalanceUpDay", balanceUp.BalanceUpDay);
-            objectDb.SetParameterValue("MoveBetsDay", balanceUp.MoveBetsDay);
-
-            using (var reader = await objectDb.ExecuteReaderAsync())
-            {
-                if (reader.Read())
-                {
-                    ticketDetail = new TicketDetail
-                    {
-                        MainTicket = MapTicket(reader),
-                        SpecialPlatform = Converter.ToInt(reader["SpecialPlatform"]),
-                        AgentId = Converter.ToInt(reader["Recommend"])
-                    };
-
-                    if (reader.NextResult())
-                    {
-                        ticketDetail.TicketData.AddRange(ReadReferneceTicket(reader).ToList());
-                    }
-                }
-            }
-
-            var output = objectDb.GetOutputParams();
-
-            var code = Converter.ToInt(output["ErrCode"]);
-            var message = Converter.ToString(output["ErrMsg"]);
-
-            if (code != 0)
-            {
-                var error = ServiceErrors.GetFromDBError(code, message);
-                return ServiceResult<TicketDetail>.Failure(error);
-            }
-
-            if (ticketDetail == null)
-            {
-                return ServiceResult<TicketDetail>.Failure(TicketError.NoInfomation);
-            }
-
-            return ServiceResult<TicketDetail>.Success(ticketDetail);
-        }
+            extraInfo => ServiceResult<Ticket>.Success(BuildTicketText(ticketDetailResult.Result), extraInfo),
+            ServiceResult<Ticket>.Failure);
     }
 
     private string[] BuildChoiceText(TicketDetail ticketDetail)
     {
-        _ticketHelper.HideSabaText = SabaUtils.IsHideSaba(ticketDetail.SpecialPlatform);
+        ticketHelper.HideSabaText = SabaUtils.IsHideSaba(ticketDetail.SpecialPlatform);
 
-        IChoice choiceBuilder = _excelBuilder.CreateChoiceBuilder(ticketDetail.MainTicket.BetTypeId);
-        List<IRichTextString> rtfChoiceList = choiceBuilder.RenderRTF(ticketDetail.MainTicket, _ticketHelper, ticketDetail.TicketData, false, _excelBuilder.RTFHelper);
+        var choiceBuilder = excelBuilder.CreateChoiceBuilder(ticketDetail.MainTicket.BetTypeId);
+        var rtfChoiceList = choiceBuilder.RenderRTF(ticketDetail.MainTicket, ticketHelper, ticketDetail.TicketData, false, excelBuilder.RTFHelper);
 
-        return rtfChoiceList.SelectMany(rtf => rtf.ToString().Split("\n")).ToArray();
+        return rtfChoiceList.SelectMany(rtf => rtf.ToString()?.Split("\n")).ToArray();
     }
 
     private string BuildStatusText(TicketDetail ticketDetail)
     {
-        IStatus statusBuilder = _excelBuilder.CreateStatusBuilder(ticketDetail.MainTicket.BetTypeId);
-        IRichTextString rtfStatus = statusBuilder.RenderRTF(ticketDetail.MainTicket, _ticketHelper, ticketDetail.TicketData, false, _excelBuilder.RTFHelper);
+        var statusBuilder = excelBuilder.CreateStatusBuilder(ticketDetail.MainTicket.BetTypeId);
+        var rtfStatus = statusBuilder.RenderRTF(ticketDetail.MainTicket, ticketHelper, ticketDetail.TicketData, false, excelBuilder.RTFHelper);
 
         var text = rtfStatus.ToString();
 
-        return text[..text.IndexOf('\n')];
+        return text?[..text.IndexOf('\n')];
     }
 
     private Ticket BuildTicketText(TicketDetail ticketDetail)
@@ -118,22 +59,85 @@ public class TicketRepository : ITicketRepository
             SportType = ticketDetail.MainTicket.SportTypeId,
             AgentId = ticketDetail.AgentId,
             SystemId = ticketDetail.MainTicket.UserName,
-            RefNo = _htmlBuilder.BuildRefNo(ticketDetail.MainTicket),
-            TransTime = _htmlBuilder.BuildTransTime(ticketDetail.MainTicket),
-            LicTxID = _htmlBuilder.BuildLicenseeTxId(ticketDetail.MainTicket),
+            RefNo = htmlBuilder.BuildRefNo(ticketDetail.MainTicket),
+            TransTime = htmlBuilder.BuildTransTime(ticketDetail.MainTicket),
+            LicTxID = htmlBuilder.BuildLicenseeTxId(ticketDetail.MainTicket),
             Choice = BuildChoiceText(ticketDetail),
-            Status = BuildStatusText(ticketDetail),
+            Status = BuildStatusText(ticketDetail)
         };
     }
 
-    private static IEnumerable<BetList.Core.Entities.ITicketData> ReadReferneceTicket(IDataReader reader)
+    private async Task<ServiceResult<TicketDetail>> GetTicketFromDb(long refNo, BalanceUp balanceUp)
+    {
+        const string SpKey = "API_BetList_RefNo";
+        TicketDetail ticketDetail = null;
+
+        using var objectDb = dbFactory.GetObjectDb(SpKey);
+
+        objectDb.SetParameterValue(DbParam.RefNo, refNo);
+        objectDb.SetParameterValue(DbParam.BalanceUpDay, balanceUp.BalanceUpDay);
+        objectDb.SetParameterValue(DbParam.MoveBetsDay, balanceUp.MoveBetsDay);
+
+        using (var reader = await objectDb.ExecuteReaderAsync())
+        {
+            if (reader.Read())
+            {
+                ticketDetail = new TicketDetail
+                {
+                    MainTicket = MapTicket(reader),
+                    SpecialPlatform = Converter.ToInt(reader["SpecialPlatform"]),
+                    AgentId = Converter.ToInt(reader[DbParam.Recommend])
+                };
+
+                if (reader.NextResult())
+                {
+                    ticketDetail.TicketData.AddRange(ReadReferenceTicket(reader).ToList());
+                }
+            }
+        }
+
+        var output = objectDb.GetOutputParams();
+
+        var (code, message) = DbUtils.GetErrorOutputParameters(output);
+
+        if (ticketDetail is null)
+        {
+            return ServiceResult<TicketDetail>.Failure(TicketError.NoInformation);
+        }
+
+        if (code == 0)
+        {
+            return ServiceResult<TicketDetail>.Success(ticketDetail);
+        }
+
+        var error = ServiceErrors.GetFromDbError(code, message);
+        return ServiceResult<TicketDetail>.FailureWithData(error, ticketDetail);
+    }
+
+    private BetListTicket MapTicket(IDataReader reader)
+    {
+        var ticket = new BetListTicket
+        {
+            CurrencyId = Converter.ToInt(reader[DbParam.Currency]),
+            CustId = Converter.ToLong(reader[DbParam.CustId])
+        };
+
+        ReadStringData(ticket, reader);
+        ReadBooleanData(ticket, reader);
+        ReadDateTimeData(ticket, reader);
+        ReadNumericData(ticket, reader);
+
+        return ticket;
+    }
+
+    private static IEnumerable<ITicketData> ReadReferenceTicket(IDataReader reader)
     {
         while (reader.Read())
         {
-            var ticket = new BetList.Core.Entities.TicketData
+            var ticket = new TicketData
             {
                 BetTeam = Converter.ToString(reader["betteam"]),
-                RefNo = Converter.ToString(reader["refno"]),
+                RefNo = Converter.ToString(reader[DbParam.RefNo]),
                 Status = Converter.ToString(reader["status"]),
                 BetTypeId = Converter.ToInt(reader["bettype"]),
                 Stake = Converter.ToDecimal(reader["stake"]),
@@ -144,34 +148,18 @@ public class TicketRepository : ITicketRepository
         }
     }
 
-    private static BetList.Core.Entities.Ticket MapTicket(IDataReader reader)
-    {
-        var ticket = new BetList.Core.Entities.Ticket
-        {
-            CurrencyId = Converter.ToInt(reader["currency"]),
-            CustId = Converter.ToLong(reader["custid"]),
-        };
-
-        ReadStringData(ticket, reader);
-        ReadBooleanData(ticket, reader);
-        ReadDateTimeData(ticket, reader);
-        ReadNumbericData(ticket, reader);
-
-        return ticket;
-    }
-
     #region ReadTicketData
 
-    private static void ReadStringData(BetList.Core.Entities.Ticket ticket, IDataReader reader)
+    private static void ReadStringData(BetListTicket ticket, IDataReader reader)
     {
-        ticket.UserName = Converter.ToString(reader["username"]);
-        ticket.RefNo = Converter.ToString(reader["refno"]);
+        ticket.UserName = Converter.ToString(reader[DbParam.Username]);
+        ticket.RefNo = Converter.ToString(reader[DbParam.RefNo]);
         ticket.MatchCode = Converter.ToString(reader["matchcode"]);
         ticket.Status = Converter.ToString(reader["status"]);
         ticket.BetTeam = Converter.ToString(reader["betteam"]);
         ticket.EventStatus = Converter.ToString(reader["betstatus"]);
         ticket.ShowTime = Converter.ToString(reader["showtime"]);
-        ticket.OddsType = Converter.ToString(reader["oddstype"], "0");
+        ticket.OddsType = Converter.ToString(reader[DbParam.OddsType], "0");
         ticket.Race = Converter.ToString(reader["race"]);
         ticket.BetCheck = Converter.ToString(reader["betcheck"]);
         ticket.TransDesc = Converter.ToString(reader["transdesc"]);
@@ -181,20 +169,20 @@ public class TicketRepository : ITicketRepository
         ticket.JackpotInfo = Converter.ToString(reader["JackpotInfo"]);
     }
 
-    private static void ReadBooleanData(BetList.Core.Entities.Ticket ticket, IDataReader reader)
+    private static void ReadBooleanData(BetListTicket ticket, IDataReader reader)
     {
         ticket.IsLive = Converter.ToBoolean(reader["liveindicator"]);
         ticket.IsNeutral = Converter.ToBoolean(reader["isneutral"]);
     }
 
-    private static void ReadDateTimeData(BetList.Core.Entities.Ticket ticket, IDataReader reader)
+    private void ReadDateTimeData(BetListTicket ticket, IDataReader reader)
     {
-        ticket.WinlostDate = Converter.ToDateTime(reader["winlostdate"], DateTime.Now);
-        ticket.TransDate = Converter.ToDateTime(reader["transdate"], DateTime.Now);
-        ticket.EventDate = Converter.ToDateTime(reader["eventdate"], DateTime.MinValue);
+        ticket.WinlostDate = Converter.ToDateTime(reader["winlostdate"], dateTimeProvider.UtcNow);
+        ticket.TransDate = Converter.ToDateTime(reader["transdate"], dateTimeProvider.UtcNow);
+        ticket.EventDate = Converter.ToDateTime(reader["eventdate"], dateTimeProvider.MinValue);
     }
 
-    private static void ReadNumbericData(BetList.Core.Entities.Ticket ticket, IDataReader reader)
+    private static void ReadNumericData(BetListTicket ticket, IDataReader reader)
     {
         // Int
         ticket.SportTypeId = Converter.ToInt(reader["sporttype"]);

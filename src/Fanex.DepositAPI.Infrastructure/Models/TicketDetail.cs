@@ -1,14 +1,14 @@
-﻿using Fanex.BetList.Core.Entities;
+﻿namespace Fanex.DepositAPI.Infrastructure.Models;
 
-namespace Fanex.DepositAPI.Infrastructure.Models;
+using BetList.Core.Entities;
 
 public class TicketDetail
 {
     public Ticket MainTicket { get; set; }
 
-    public List<ITicketData> TicketData { get; set; } = new List<ITicketData>();
+    public List<ITicketData> TicketData { get; set; } = new();
 
     public int SpecialPlatform { get; set; }
 
-    public int AgentId {get; set; }
+    public int AgentId { get; set; }
 }

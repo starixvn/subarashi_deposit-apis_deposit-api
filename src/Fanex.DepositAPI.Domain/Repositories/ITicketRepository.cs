@@ -1,9 +1,9 @@
-﻿using Fanex.DepositAPI.Domain.Entities;
-using Fanex.DepositAPI.Domain.Results;
+﻿namespace Fanex.DepositAPI.Domain.Repositories;
 
-namespace Fanex.DepositAPI.Domain.Repositories;
+using Entities;
+using Results;
 
 public interface ITicketRepository
 {
-    Task<ServiceResult<Ticket>> GetTicketInfomation(long refno, BalanceUp balanceUp);
+    Task<ServiceResult<Ticket>> GetTicketInformationAsync(long refNo, BalanceUp balanceUp);
 }

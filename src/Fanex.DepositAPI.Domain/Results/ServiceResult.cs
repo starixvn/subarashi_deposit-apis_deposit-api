@@ -1,48 +1,21 @@
-﻿using System.Text.Json.Serialization;
-using Fanex.DepositAPI.Domain.Errors;
+﻿namespace Fanex.DepositAPI.Domain.Results;
 
-namespace Fanex.DepositAPI.Domain.Results;
-
-public class ServiceResult<T>
-{
-    private ServiceResult(bool isSuccess, ServiceErrors error, T result)
-    {
-        if (isSuccess && error != ServiceErrors.None ||
-            !isSuccess && error == ServiceErrors.None)
-        {
-            throw new ArgumentException("Invalid error", nameof(error));
-        }
-        IsSuccess = isSuccess;
-        Result = result;
-        Error = error;
-    }
-
-    [JsonIgnore]
-    public bool IsSuccess { get; }
-
-    [JsonIgnore]
-    public bool IsFailure => !IsSuccess;
-
-    public ServiceErrors Error { get; }
-
-    public T Result { get; }
-
-    public static ServiceResult<T> Success(T result) => new(true, ServiceErrors.None, result);
-
-    public static ServiceResult<T> Failure(ServiceErrors error) => new(false, error, default);
-}
+using Errors;
+using Newtonsoft.Json;
 
 public class ServiceResult
 {
-    private ServiceResult(bool isSuccess, ServiceErrors error)
+    protected ServiceResult(bool isSuccess, ServiceErrors error, string extraInfo)
     {
-        if (isSuccess && error != ServiceErrors.None ||
-            !isSuccess && error == ServiceErrors.None)
+        if ((isSuccess && error != ServiceErrors.None) ||
+            (!isSuccess && error == ServiceErrors.None))
         {
             throw new ArgumentException("Invalid error", nameof(error));
         }
+
         IsSuccess = isSuccess;
         Error = error;
+        ExtraInfo = extraInfo;
     }
 
     [JsonIgnore]
@@ -53,7 +26,23 @@ public class ServiceResult
 
     public ServiceErrors Error { get; }
 
-    public static ServiceResult Success() => new(true, ServiceErrors.None);
+    [JsonIgnore]
+    public string ExtraInfo { get; set; }
 
-    public static ServiceResult Failure(ServiceErrors error) => new(false, error);
+    public static ServiceResult Success(string extraInfo = default) => new(true, ServiceErrors.None, extraInfo);
+
+    public static ServiceResult Failure(ServiceErrors error, string extraInfo = default) => new(false, error, extraInfo);
+}
+
+public class ServiceResult<T>(bool isSuccess, ServiceErrors error, T result, string extraInfo)
+    : ServiceResult(isSuccess, error, extraInfo)
+    where T : class
+{
+    public T Result { get; } = result;
+
+    public static ServiceResult<T> Success(T result, string extraInfo = default) => new(true, ServiceErrors.None, result, extraInfo);
+
+    public new static ServiceResult<T> Failure(ServiceErrors error, string extraInfo = default) => new(false, error, default, extraInfo);
+
+    public static ServiceResult<T> FailureWithData(ServiceErrors error, T result, string extraInfo = default) => new(false, error, result, extraInfo);
 }
