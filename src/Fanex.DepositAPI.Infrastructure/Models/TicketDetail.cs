@@ -11,4 +11,6 @@ public class TicketDetail
     public int SpecialPlatform { get; set; }
 
     public int AgentId { get; set; }
+
+    public int PlayerSiteId { get; set; }
 }

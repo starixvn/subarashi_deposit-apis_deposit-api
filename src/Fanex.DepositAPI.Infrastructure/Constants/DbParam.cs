@@ -18,6 +18,7 @@ public static class DbParam
     public const string MoveBetsDay = "MoveBetsDay";
     public const string OddsType = "OddsType";
     public const string Recommend = "Recommend";
+    public const string PlayerSiteId = "PlayerSiteId";
     public const string RefNo = "RefNo";
     public const string Username = "Username";
 

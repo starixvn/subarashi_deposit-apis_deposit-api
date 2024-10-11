@@ -141,12 +141,16 @@ public class TicketRepositoryTest : RepositoryBaseTest
     {
         // Arrange
         var refNo = Fixture.Create<long>();
+        var agentId = Fixture.Create<int>();
+        var siteId = Fixture.Create<int>();
         var balanceUp = Fixture.Create<BalanceUp>();
         var data = Fixture.Create<BetListTicket>();
         _dataReader.Read().Returns(true);
         _dataReader.NextResult().Returns(false);
         DbTestUtils.MapReaderData(_dataReader, data);
         SetupBuilderMock(statusText);
+        _dataReader[DbParam.PlayerSiteId].Returns(siteId);
+        _dataReader[DbParam.Recommend].Returns(agentId);
 
         // Action
         var result = await _ticketRepository.GetTicketInformationAsync(refNo, balanceUp);
@@ -160,6 +164,8 @@ public class TicketRepositoryTest : RepositoryBaseTest
         result.Result.SystemId.Should().Be(data.UserName);
         result.Result.Choice.Should().BeEmpty();
         result.Result.Status.Should().Be(statusText);
+        result.Result.SiteId.Should().Be(siteId);
+        result.Result.AgentId.Should().Be(agentId);
         result.ExtraInfo.Should().BeNull();
     }
 

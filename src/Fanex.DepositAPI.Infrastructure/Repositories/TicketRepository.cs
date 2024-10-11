@@ -57,6 +57,7 @@ public class TicketRepository(
         return new Ticket
         {
             SportType = ticketDetail.MainTicket.SportTypeId,
+            SiteId = ticketDetail.PlayerSiteId,
             AgentId = ticketDetail.AgentId,
             SystemId = ticketDetail.MainTicket.UserName,
             RefNo = htmlBuilder.BuildRefNo(ticketDetail.MainTicket),
@@ -86,7 +87,8 @@ public class TicketRepository(
                 {
                     MainTicket = MapTicket(reader),
                     SpecialPlatform = Converter.ToInt(reader["SpecialPlatform"]),
-                    AgentId = Converter.ToInt(reader[DbParam.Recommend])
+                    AgentId = Converter.ToInt(reader[DbParam.Recommend]),
+                    PlayerSiteId = Converter.ToInt(reader[DbParam.PlayerSiteId])
                 };
 
                 if (reader.NextResult())
