@@ -58,6 +58,7 @@ public class TicketRepository(
         {
             SportType = ticketDetail.MainTicket.SportTypeId,
             SiteId = ticketDetail.PlayerSiteId,
+            MatchId = ticketDetail.MainTicket.MatchId,
             AgentId = ticketDetail.AgentId,
             SystemId = ticketDetail.MainTicket.UserName,
             RefNo = htmlBuilder.BuildRefNo(ticketDetail.MainTicket),
