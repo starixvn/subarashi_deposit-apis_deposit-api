@@ -1,17 +1,17 @@
-﻿namespace Fanex.DepositAPI.Application.UnitTests;
+﻿namespace Fanex.DepositAPI.Application.UnitTests.Handlers;
 
+using Application.Handlers;
 using AutoFixture;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
-using Handlers;
 using Logging;
 using NSubstitute;
 using Queries;
 
-public class GetTicketInformationQueryTest : IDisposable
+public class GetTicketInformationHandlerTest : IDisposable
 {
     private static readonly GetTicketInformationQuery Query = new() { RefNo = 1231313131 };
     private static readonly BalanceUp BalanceUp = new() { BalanceUpDay = DateTime.Now, MoveBetsDay = DateTime.Now };
@@ -23,7 +23,7 @@ public class GetTicketInformationQueryTest : IDisposable
     private readonly ILogger _logger;
     private readonly ITicketRepository _ticketRepository;
 
-    public GetTicketInformationQueryTest()
+    public GetTicketInformationHandlerTest()
     {
         _logger = Substitute.For<ILogger>();
         _balanceUpRepository = Substitute.For<IBalanceUpRepository>();

@@ -24,7 +24,7 @@ public class TicketEndpoints : IEndpoints
 
     [Produces("application/json")]
     [ProducesResponseType(typeof(GetTicketInformationResponse), (int)HttpStatusCode.OK)]
-    private static async Task<IResult> GetTicketInformation(
+    internal static async Task<IResult> GetTicketInformation(
         long refNo,
         string? lang,
         IMediator mediator)
