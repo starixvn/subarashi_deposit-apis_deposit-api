@@ -162,6 +162,7 @@ public class TicketRepositoryTest : RepositoryBaseTest
         result.Result.TransTime.Should().Be(_betListHTMLBuilder.BuildTransTime(data));
         result.Result.LicTxID.Should().Be(_betListHTMLBuilder.BuildLicenseeTxId(data));
         result.Result.SystemId.Should().Be(data.UserName);
+        result.Result.MatchId.Should().Be(data.MatchId);
         result.Result.Choice.Should().BeEmpty();
         result.Result.Status.Should().Be(statusText);
         result.Result.SiteId.Should().Be(siteId);

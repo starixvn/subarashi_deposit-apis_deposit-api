@@ -24,4 +24,10 @@
     <ProjectReference Include="..\Fanex.DepositAPI.Application\Fanex.DepositAPI.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<SonarQubeSetting Include="sonar.coverage.exclusions">
+	  <Value>**/DependencyInjection.cs, **/AssemblyReference.cs</Value>
+	</SonarQubeSetting>
+  </ItemGroup>
+
 </Project>

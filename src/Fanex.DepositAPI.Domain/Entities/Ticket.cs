@@ -6,6 +6,8 @@ public class Ticket
 
     public int SiteId { get; set; }
 
+    public int MatchId { get; set; }
+
     public int AgentId { get; set; }
 
     public string RefNo { get; set; }
