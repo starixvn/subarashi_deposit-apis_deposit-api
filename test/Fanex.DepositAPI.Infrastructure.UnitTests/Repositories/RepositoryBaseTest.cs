@@ -17,7 +17,7 @@ public abstract class RepositoryBaseTest : IDisposable
         ObjectDb = Substitute.For<IObjectDb>();
         DbFactoryFixture = dbFactoryFixture;
 
-        DbFactoryFixture.MockObjectDb((spKey, _) =>
+        DbFactoryFixture.MockObjectDb((spKey, _, _) =>
         {
             ObjectDb.SettingKey.Returns(spKey);
             return ObjectDb;
