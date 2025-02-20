@@ -35,7 +35,7 @@ RUN dotnet publish "Fanex.DepositAPI.WebApi/Fanex.DepositAPI.WebApi.csproj" -c R
     --use-current-runtime \
     --self-contained false
 
-FROM hub.nexdev.net/base/dotnet/core/aspnet:8.0-alpine AS final
+FROM hub.nexdev.net/base/dotnet/core/aspnet:8.0-alpine-25h1 AS final
 
 ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
 ENV ASPNETCORE_HTTP_PORTS=5000
