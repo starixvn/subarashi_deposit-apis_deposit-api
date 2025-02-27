@@ -29,6 +29,7 @@
 
   <ItemGroup>
 	<AdditionalFiles Include="..\..\Dockerfile" Link="Dockerfile" />
+	<AdditionalFiles Include="..\..\Dockerfile.dev" Link="Dockerfile.dev" />
 	<AdditionalFiles Include="..\..\README.md" Link="README.md" />
 	<AdditionalFiles Include="..\..\.dockerignore" Link=".dockerignore" />
   </ItemGroup>
