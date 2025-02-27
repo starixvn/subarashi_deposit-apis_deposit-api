@@ -16,7 +16,6 @@ using Domain.Repositories;
 using FluentAssertions;
 using Infrastructure.Repositories;
 using NSubstitute;
-using Utils;
 using BetListTicket = BetList.Core.Entities.Ticket;
 
 [Collection("DbFactoryFixture")]
@@ -81,7 +80,7 @@ public class TicketRepositoryTest : RepositoryBaseTest
         var data = Fixture.Create<BetListTicket>();
         _dataReader.Read().Returns(true);
         _dataReader.NextResult().Returns(false);
-        DbTestUtils.MapReaderData(_dataReader, data);
+        MapReaderData(_dataReader, data);
         SetupBuilderMock(string.Empty);
 
         ObjectDb.GetOutputParams().Returns(new Hashtable
@@ -147,7 +146,7 @@ public class TicketRepositoryTest : RepositoryBaseTest
         var data = Fixture.Create<BetListTicket>();
         _dataReader.Read().Returns(true);
         _dataReader.NextResult().Returns(false);
-        DbTestUtils.MapReaderData(_dataReader, data);
+        MapReaderData(_dataReader, data);
         SetupBuilderMock(statusText);
         _dataReader[DbParam.PlayerSiteId].Returns(siteId);
         _dataReader[DbParam.Recommend].Returns(agentId);

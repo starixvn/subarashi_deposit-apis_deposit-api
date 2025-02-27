@@ -6,7 +6,6 @@ using Domain.Repositories;
 using FluentAssertions;
 using Infrastructure.Repositories;
 using NSubstitute;
-using Utils;
 
 [Collection("DbFactoryFixture")]
 public class BalanceUpRepositoryTest : RepositoryBaseTest
@@ -35,7 +34,7 @@ public class BalanceUpRepositoryTest : RepositoryBaseTest
         };
 
         _dataReader.Read().Returns(true);
-        DbTestUtils.MapReaderData(_dataReader, data);
+        MapReaderData(_dataReader, data);
 
         // Action
         var result = await _balanceUpRepository.GetBalanceUpAsync();

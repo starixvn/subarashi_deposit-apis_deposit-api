@@ -18,7 +18,7 @@ public abstract class CachedRepositoryBaseTest : IDisposable
     protected void SetupCacheData(string key, object data)
     {
         MemoryCache
-            .TryGetValue(Arg.Is<object>(k => k.ToString() == key), out _)
+            .TryGetValue(key, out _)
             .Returns(x =>
             {
                 x[1] = data;
@@ -29,7 +29,7 @@ public abstract class CachedRepositoryBaseTest : IDisposable
     protected void SetupNoCacheData(string key)
     {
         MemoryCache
-            .TryGetValue(Arg.Is<object>(k => k.ToString() == key), out _)
+            .TryGetValue(key, out _)
             .Returns(false);
     }
 }
