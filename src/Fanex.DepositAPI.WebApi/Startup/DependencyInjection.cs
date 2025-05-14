@@ -3,7 +3,6 @@
 using System.Reflection;
 using Application;
 using Configurations;
-using Data;
 using ExceptionHandler;
 using HealthChecks;
 using Infrastructure;
@@ -30,7 +29,7 @@ public static class DependencyInjection
             .AddHealthChecks()
             .AddCheck<ServerHealthCheck>("Server")
             .AddCheck<MemoryHealthCheck>("Memory")
-            .AddMultiSqlServer(configuration);
+            .AddCheck<VaultHealthCheck>("Vault");
 
         services.AddHttpContextAccessor();
         services.AddExceptionHandler<BadHttpRequestExceptionHandler>();
@@ -53,20 +52,5 @@ public static class DependencyInjection
         {
             serviceInstaller.Install(services, configuration);
         }
-    }
-
-    private static IHealthChecksBuilder AddMultiSqlServer(this IHealthChecksBuilder healthChecksBuilder, IConfiguration configuration)
-    {
-        var connectionStrings = configuration.GetSection("ConnectionStrings")
-            .GetChildren()
-            .Where(config => config.Value is not null && !config.Value.Contains("dynamic_runtime"));
-
-        foreach (var connectionString in connectionStrings)
-        {
-            var rawConnectionString = Cryptography.DecryptConnectionString(connectionString.Value);
-            healthChecksBuilder.AddSqlServer(rawConnectionString, name: connectionString.Key);
-        }
-
-        return healthChecksBuilder;
     }
 }

@@ -2,23 +2,19 @@
 
 using Data;
 using Data.SqlServer;
+using Data.Vault;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 public class FanexDataServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
-        var listConnectionName = configuration.GetSection("ConnectionStrings").GetChildren().Select(_ => _.Key);
-        var connectionStrings = listConnectionName
-            .Select(connectionName => new KeyValuePair<string, ConnectionConfiguration>(
-                connectionName,
-                new ConnectionConfiguration(connectionName, configuration.GetConnectionString(connectionName))))
-            .ToDictionary();
-
         DbSettingProviderManager
             .StartNewSession()
-            .Use(connectionStrings)
-            .WithSqlServer()
+            .WithSqlServer(configuration)
             .UseDefaultDbSettingProvider("~/FanexSpName.xml")
             .Run();
+
+        services.TryAddSingleton<VaultDbAliasService, VaultDbAliasServiceImp>();
     }
 }

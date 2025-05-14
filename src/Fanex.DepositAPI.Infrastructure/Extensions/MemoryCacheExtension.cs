@@ -35,12 +35,7 @@ public static class MemoryCacheExtension
 
     public static T GetValueFromCache<T>(this IMemoryCache cache, string key, T defaultValue = default)
     {
-        if (!cache.TryGetValue(key, out T data))
-        {
-            return data;
-        }
-
-        return defaultValue;
+        return cache.TryGetValue(key, out T data) ? data : defaultValue;
     }
 
     public static void RemoveFromCache(this IMemoryCache cache, string key)
